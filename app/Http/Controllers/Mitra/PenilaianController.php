@@ -12,6 +12,8 @@ use App\Models\PengajuanMagang;
 use App\Models\Penilaian;
 use App\Models\Notifikasi;
 use App\Http\Requests\Requests\StorePenilaianMitraRequest;
+use App\Mail\PenilaianMasuk;
+use Illuminate\Support\Facades\Mail;
 
 class PenilaianController extends Controller
 {
@@ -55,6 +57,11 @@ class PenilaianController extends Controller
             'pesan'   => "{$pengajuan->mitra->nama_perusahaan} telah memberikan penilaian untuk magang Anda.",
             'tipe'    => 'info',
         ]);
+
+        // Kirim email notifikasi ke mahasiswa
+        Mail::to($pengajuan->mahasiswa->user->email)->send(
+            new PenilaianMasuk($pengajuan, $penilaian, 'mitra')
+        );
 
         return redirect()->route('mitra.dashboard')->with('success','Penilaian berhasil disimpan.');
     }

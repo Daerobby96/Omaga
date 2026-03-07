@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Mitra;
 
 use App\Http\Controllers\Controller;
 use App\Models\{PengajuanMagang, Notifikasi};
+use App\Mail\{PengajuanDiterima, PengajuanDitolak};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class MahasiswaController extends Controller
 {
@@ -46,6 +48,9 @@ class MahasiswaController extends Controller
             'tipe'    => 'success',
         ]);
 
+        // Kirim email notifikasi ke mahasiswa
+        Mail::to($pengajuan->mahasiswa->user->email)->send(new PengajuanDiterima($pengajuan));
+
         // Notif admin
         \App\Models\User::role('admin')->each(fn($admin) => Notifikasi::create([
             'user_id' => $admin->id,
@@ -75,6 +80,11 @@ class MahasiswaController extends Controller
             'pesan'   => "Maaf, {$pengajuan->mitra->nama_perusahaan} tidak dapat menerima Anda saat ini.",
             'tipe'    => 'danger',
         ]);
+
+        // Kirim email notifikasi ke mahasiswa
+        Mail::to($pengajuan->mahasiswa->user->email)->send(
+            new PengajuanDitolak($pengajuan, $request->catatan_mitra)
+        );
 
         return back()->with('success','Mahasiswa telah ditolak.');
     }
