@@ -29,8 +29,8 @@
             <strong>Nama:</strong> {{ $mahasiswa->nama }}<br>
             <strong>NIM:</strong> {{ $mahasiswa->nim }}<br>
             <strong>Mitra:</strong> {{ $pengajuan->mitra->nama_perusahaan }}<br>
-            <strong>Periode:</strong> {{ $pengajuan->tanggal_mulai->format('d F Y') }} - {{ $pengajuan->tanggal_selesai->format('d F Y') }}<br>
-            <strong>Tanggal Terbit:</strong> {{ $sertifikat->diterbitkan_at->format('d F Y') }}
+            <strong>Periode:</strong> {{ $pengajuan->tanggal_mulai->locale('id')->translatedFormat('d F Y') }} - {{ $pengajuan->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}<br>
+            <strong>Tanggal Terbit:</strong> {{ $sertifikat->diterbitkan_at->locale('id')->translatedFormat('d F Y') }}
         </div>
         
         @if($pengajuan->penilaian && $pengajuan->penilaian->nilai_akhir)

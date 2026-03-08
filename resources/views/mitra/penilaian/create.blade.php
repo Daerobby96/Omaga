@@ -93,7 +93,7 @@
     @else
     <div class="alert d-flex gap-2" style="background:#e3f8ef;color:#065f46;border-radius:12px;">
         <i class="fas fa-check-circle mt-1"></i>
-        <div>Penilaian sudah diberikan pada {{ $penilaian->dinilai_mitra_at->format('d M Y H:i') }}. Tidak dapat diubah.</div>
+        <div>Penilaian sudah diberikan pada {{ $penilaian->dinilai_mitra_at->locale('id')->translatedFormat('d F Y H:i') }}. Tidak dapat diubah.</div>
     </div>
     @endif
 </form>

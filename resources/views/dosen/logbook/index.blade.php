@@ -59,7 +59,7 @@
                         </div>
                     </td>
                     <td style="font-size:12px;font-family:'DM Mono',mono;color:#64748b;">
-                        {{ $lb->tanggal->format('d M Y') }}
+                        {{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }}
                     </td>
                     <td style="font-size:13px;max-width:280px;">{{ Str::limit($lb->kegiatan, 70) }}</td>
                     <td style="font-size:12px;color:#64748b;">{{ $lb->durasi_kerja ?? '—' }}</td>
@@ -79,7 +79,7 @@
                                 data-bs-toggle="modal" data-bs-target="#revisiModal"
                                 data-lb-id="{{ $lb->id }}"
                                 data-lb-nama="{{ $lb->mahasiswa->nama_lengkap }}"
-                                data-lb-tgl="{{ $lb->tanggal->format('d M Y') }}">
+                                data-lb-tgl="{{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }}">
                                 <i class="fas fa-redo me-1"></i>Revisi
                             </button>
                         </div>

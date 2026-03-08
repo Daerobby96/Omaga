@@ -20,7 +20,10 @@ class LogbookController extends Controller
         $pengajuanAktif = PengajuanMagang::where('mahasiswa_id',$mahasiswa->id)
             ->whereIn('status',['berjalan','diterima_mitra'])->first();
 
-        abort_unless($pengajuanAktif, 403, 'Tidak ada magang aktif.');
+        if (!$pengajuanAktif) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Tidak ada magang aktif. Silakan ajukan magang terlebih dahulu.');
+        }
 
         $logbook = Logbook::where('pengajuan_id',$pengajuanAktif->id)
             ->orderByDesc('tanggal')->paginate(20);
@@ -33,12 +36,19 @@ class LogbookController extends Controller
         $mahasiswa      = Auth::user()->mahasiswa;
         $pengajuanAktif = PengajuanMagang::where('mahasiswa_id',$mahasiswa->id)
             ->whereIn('status',['berjalan','diterima_mitra'])->first();
-        abort_unless($pengajuanAktif, 403, 'Tidak ada magang aktif.');
+        
+        if (!$pengajuanAktif) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Tidak ada magang aktif.');
+        }
 
         // Cek sudah mengisi logbook hari ini
         $sudahHariIni = Logbook::where('pengajuan_id',$pengajuanAktif->id)
             ->whereDate('tanggal',today())->exists();
-        abort_if($sudahHariIni, 403, 'Logbook hari ini sudah diisi. Harap tunggu besok untuk mengisi logbook lagi.');
+        if ($sudahHariIni) {
+            return redirect()->route('mahasiswa.logbook.index')
+                ->with('error', 'Logbook hari ini sudah diisi.');
+        }
 
         return view('mahasiswa.logbook.create', compact('pengajuanAktif'));
     }

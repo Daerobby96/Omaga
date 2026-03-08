@@ -27,7 +27,7 @@
                 <tbody>
                     @forelse($logbook as $l)
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($l->tanggal)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($l->tanggal)->locale('id')->translatedFormat('d F Y') }}</td>
                         <td>
                             <div class="fw-semibold">{{ $l->pengajuan->mahasiswa->nama_lengkap }}</div>
                             <small class="text-muted">{{ $l->pengajuan->mahasiswa->nim }}</small>
@@ -99,7 +99,7 @@
             </div>
             <div class="modal-body">
                 <p><strong>Mahasiswa:</strong> {{ $l->pengajuan->mahasiswa->nama_lengkap }}</p>
-                <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($l->tanggal)->format('d M Y') }}</p>
+                <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($l->tanggal)->locale('id')->translatedFormat('d F Y') }}</p>
                 <p><strong>Jam:</strong> {{ $l->jam_mulai }} - {{ $l->jam_selesai }}</p>
                 <p><strong>Keterangan:</strong></p>
                 <p class="border rounded p-2">{{ $l->keterangan }}</p>

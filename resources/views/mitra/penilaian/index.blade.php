@@ -33,7 +33,7 @@
                         </div>
                     </td>
                     <td style="font-size:13px;">{{ $p->pengajuan->mitra->nama_perusahaan }}</td>
-                    <td style="font-size:12px;color:#64748b;">{{ $p->dinilai_mitra_at?->format('d M Y') ?? '-' }}</td>
+                    <td style="font-size:12px;color:#64748b;">{{ $p->dinilai_mitra_at?->locale('id')->translatedFormat('d F Y') ?? '-' }}</td>
                     <td>
                         @if($p->lulus)
                             <span class="bdg bg-success-subtle text-success">Lulus</span>

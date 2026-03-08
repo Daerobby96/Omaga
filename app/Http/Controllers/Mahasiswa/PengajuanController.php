@@ -28,7 +28,10 @@ class PengajuanController extends Controller
             ->whereIn('status',['berjalan','diterima_mitra','diajukan','review_koordinator','disetujui_koordinator','review_mitra'])
             ->exists();
 
-        abort_if($sedangMagang, 403, 'Anda masih memiliki pengajuan aktif.');
+        if ($sedangMagang) {
+            return redirect()->route('mahasiswa.pengajuan.index')
+                ->with('error', 'Anda masih memiliki pengajuan aktif. Silakan tunggu hingga proses selesai.');
+        }
 
         $mitra = Mitra::where('status','aktif')->orderBy('nama_perusahaan')->get();
         return view('mahasiswa.pengajuan.create', compact('mitra'));
@@ -41,8 +44,7 @@ class PengajuanController extends Controller
         $data['mahasiswa_id'] = $mahasiswa->id;
         $data['status']       = 'diajukan';
 
-        if ($request->hasFile('surat_pengantar'))
-            $data['surat_pengantar'] = $request->file('surat_pengantar')->store('pengajuan/surat','public');
+        // Proposal tetap diupload jika ada
         if ($request->hasFile('proposal'))
             $data['proposal'] = $request->file('proposal')->store('pengajuan/proposal','public');
 
@@ -67,12 +69,6 @@ class PengajuanController extends Controller
         abort_unless(auth()->user()->mahasiswa->id === $pengajuan->mahasiswa_id, 403);
         $pengajuan->load(['mitra','dosen','logbook','penilaian','sertifikat']);
         return view('mahasiswa.pengajuan.show', compact('pengajuan'));
-    }
-
-    public function downloadSurat(PengajuanMagang $pengajuan)
-    {
-        abort_unless(auth()->user()->mahasiswa->id === $pengajuan->mahasiswa_id, 403);
-        return \Storage::disk('public')->download($pengajuan->surat_pengantar);
     }
 }
 

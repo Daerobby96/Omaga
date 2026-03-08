@@ -5,8 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sertifikat Magang</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+SC:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue-deep:    #1A3A6E;
@@ -39,7 +37,7 @@
     justify-content: center;
     min-height: 100vh;
     padding: 40px 20px;
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: Georgia, 'Times New Roman', serif;
   }
 
   .certificate {
@@ -155,7 +153,7 @@
     font-style: bold;
   }
   .institution-sub {
-    font-family: 'EB Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 11px;
     letter-spacing: 2px;
     color: var(--text-light);
@@ -199,7 +197,7 @@
     background-clip: text;
   }
   .cert-title-en {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 11.5px;
     font-style: italic;
     color: var(--text-light);
@@ -227,7 +225,7 @@
   .title-rule::after  { right: 55px; }
 
   .intro {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 15px;
     font-style: italic;
     color: var(--text-mid);
@@ -235,7 +233,7 @@
   }
 
   .recipient-name {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 50px;
     font-weight: 600;
     font-style: italic;
@@ -268,7 +266,7 @@
     align-items: baseline;
   }
   .detail-label {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 13px;
     font-style: italic;
     color: var(--text-light);
@@ -277,7 +275,7 @@
   }
   .detail-sep  { color: var(--blue-bright); font-size: 10px; text-align: center; }
   .detail-value {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 14.5px;
     font-weight: 600;
     color: var(--text-dark);
@@ -332,15 +330,15 @@
     height: 1px;
     background: linear-gradient(to right, transparent, #93C5FD, transparent);
   }
-  .sig-name  { font-family:'Cormorant SC',serif; font-size:11.5px; font-weight:600; color:var(--blue-deep); letter-spacing:1px; text-align:center; }
-  .sig-title { font-family:'EB Garamond',serif; font-size:9.5px; font-style:italic; color:var(--text-light); text-align:center; margin-top:1px; }
+  .sig-name  { font-family:Georgia,serif; font-size:11.5px; font-weight:600; color:var(--blue-deep); letter-spacing:1px; text-align:center; }
+  .sig-title { font-family:Georgia,serif; font-size:9.5px; font-style:italic; color:var(--text-light); text-align:center; margin-top:1px; }
 
   .wax-seal { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px; }
   .seal-date { font-family:'Cormorant SC',serif; font-size:9px; color:var(--text-light); letter-spacing:1.5px; text-align:center; }
 
   .footnote {
     margin-top: 14px;
-    font-family: 'EB Garamond', serif;
+    font-family: Georgia, serif;
     font-size: 9px;
     font-style: italic;
     color: var(--text-light);

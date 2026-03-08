@@ -64,9 +64,6 @@ class PengajuanController extends Controller
             'url'     => route('mahasiswa.pengajuan.show', $pengajuan),
         ]);
 
-        // Kirim email notifikasi ke mahasiswa
-        Mail::to($pengajuan->mahasiswa->user->email)->send(new PengajuanDiterima($pengajuan));
-
         // Notifikasi mitra
         Notifikasi::create([
             'user_id' => $pengajuan->mitra->user_id,
@@ -149,5 +146,19 @@ class PengajuanController extends Controller
         ]);
 
         return back()->with('success','Magang ditandai selesai. Dosen dan mitra dapat memberikan penilaian.');
+    }
+
+    /** Admin/Koordinator mengupdate nomor surat */
+    public function updateNomorSurat(Request $request, PengajuanMagang $pengajuan)
+    {
+        $request->validate([
+            'nomor_surat' => 'required|string|max:50',
+        ]);
+
+        $pengajuan->update([
+            'nomor_surat' => $request->nomor_surat,
+        ]);
+
+        return back()->with('success','Nomor surat berhasil diperbarui.');
     }
 }

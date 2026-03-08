@@ -30,11 +30,14 @@
                         </div>
                     </td>
                     <td style="font-size:13px;">{{ $s->pengajuan->mitra->nama_perusahaan }}</td>
-                    <td style="font-size:12px;color:#64748b;">{{ $s->diterbitkan_at?->format('d M Y') ?? '—' }}</td>
+                    <td style="font-size:12px;color:#64748b;">{{ $s->diterbitkan_at?->locale('id')->translatedFormat('d F Y') ?? '—' }}</td>
                     <td style="font-size:12px;color:#64748b;">{{ $s->diterbitkanOleh?->name ?? '—' }}</td>
                     <td>
                         <a href="{{ route('admin.sertifikat.view',$s) }}" target="_blank" class="btn btn-sm" style="background:#3b82f6;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;">
                             <i class="fas fa-eye me-1"></i>Preview
+                        </a>
+                        <a href="{{ route('admin.sertifikat.edit',$s) }}" class="btn btn-sm" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;">
+                            <i class="fas fa-edit me-1"></i>Edit
                         </a>
                     </td>
                 </tr>
@@ -64,7 +67,7 @@ $bisaGenerate = \App\Models\PengajuanMagang::with(['mahasiswa','mitra'])
     </div>
     <div class="table-responsive">
         <table class="table-custom">
-            <thead><tr><th>Mahasiswa</th><th>Mitra</th><th>Nilai Akhir</th><th>Grade</th><th>Aksi</th></tr></thead>
+            <thead><tr><th>Mahasiswa</th><th>Mitra</th><th>Nilai Akhir</th><th>Grade</th><th>Nomor Sertifikat</th><th>Aksi</th></tr></thead>
             <tbody>
                 @foreach($bisaGenerate as $p)
                 <tr>
@@ -78,8 +81,9 @@ $bisaGenerate = \App\Models\PengajuanMagang::with(['mahasiswa','mitra'])
                     <td style="font-size:15px;font-weight:700;color:#0ea472;">{{ number_format($p->penilaian->nilai_akhir,1) }}</td>
                     <td><span style="font-size:20px;font-weight:800;color:#0ea472;">{{ $p->penilaian->grade }}</span></td>
                     <td>
-                        <form action="{{ route('admin.sertifikat.generate',$p) }}" method="POST">
+                        <form action="{{ route('admin.sertifikat.generate',$p) }}" method="POST" class="d-flex gap-2">
                             @csrf
+                            <input type="text" name="nomor_sertifikat" class="form-control form-control-sm" placeholder="No. Sertifikat" style="width:150px;" required>
                             <button class="btn btn-sm btn-warning" style="font-size:11px;border-radius:7px;padding:4px 10px;">
                                 <i class="fas fa-certificate me-1"></i>Generate
                             </button>

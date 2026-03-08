@@ -102,7 +102,7 @@
                     <tbody>
                         @foreach($logbookTerbaru as $lb)
                         <tr>
-                            <td style="font-size:12px;font-family:'DM Mono',mono;">{{ $lb->tanggal->format('d M Y') }}</td>
+                            <td style="font-size:12px;font-family:'DM Mono',mono;">{{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }}</td>
                             <td style="font-size:13px;">{{ Str::limit($lb->kegiatan, 60) }}</td>
                             <td style="font-size:12px;color:#64748b;">{{ substr($lb->jam_masuk,0,5) }} – {{ substr($lb->jam_keluar,0,5) }}</td>
                             <td><span class="bdg {{ $lb->status_badge['class'] }}">{{ $lb->status_badge['label'] }}</span></td>
@@ -147,7 +147,7 @@
                 <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
                     <div>
                         <div style="font-size:13px;font-weight:600;">{{ Str::limit($p->mitra->nama_perusahaan,25) }}</div>
-                        <div style="font-size:11px;color:#64748b;">{{ $p->created_at->format('M Y') }}</div>
+                        <div style="font-size:11px;color:#64748b;">{{ $p->created_at->locale('id')->translatedFormat('F Y') }}</div>
                     </div>
                     <span class="bdg {{ $p->status_badge['class'] }}" style="font-size:10px;">{{ $p->status_badge['label'] }}</span>
                 </div>

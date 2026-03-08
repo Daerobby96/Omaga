@@ -12,9 +12,9 @@
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
 <style>
 :root{--sidebar-w:262px;--topbar-h:64px;--primary:#1a56db;--primary-dark:#1240aa;--primary-light:#ebf0ff;--accent:#0ea472;--accent-light:#e3f8ef;--warn:#f59e0b;--danger:#ef4444;--dark:#0f172a;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc;--sidebar-bg:#0f172a;--radius:14px;}
-*{box-sizing:border-box;}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--dark);}a{text-decoration:none;}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--dark);overflow-x:hidden}a{text-decoration:none}
 /* Sidebar */
-.sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:1000;overflow-y:auto;overflow-x:hidden;}
+.sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:1000;overflow-y:auto;overflow-x:hidden;pointer-events:auto}
 .sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px;}
 .sb-brand{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .sb-icon{width:40px;height:40px;border-radius:11px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -31,16 +31,24 @@
 .u-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;overflow:hidden;}
 .u-avatar img{width:34px;height:34px;object-fit:cover;}.u-name{font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}.u-role{font-size:10px;color:rgba(255,255,255,.35);}
 /* Main */
-.main-wrap{margin-left:var(--sidebar-w);min-height:100vh;}
-.topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;position:sticky;top:0;z-index:100;}
+.main-wrap{margin-left:var(--sidebar-w);min-height:100vh;position:relative}
+.topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;position:sticky;top:0;z-index:100;width:100%}
 .topbar-title{font-size:17px;font-weight:700;color:var(--dark);}.topbar-sub{font-size:12px;color:var(--muted);}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.ic-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;position:relative;}
-.ic-btn:hover{background:var(--bg);color:var(--dark);}.notif-dot{width:8px;height:8px;background:var(--danger);border-radius:50%;position:absolute;top:7px;right:7px;border:2px solid #fff;}
+.ic-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;position:relative;flex-shrink:0}
+.ic-btn:hover{background:var(--bg);color:var(--dark)}
+.notif-dot{width:8px;height:8px;background:var(--danger);border-radius:50%;position:absolute;top:7px;right:7px;border:2px solid #fff}
+/* Menu toggle button for mobile */
+.menu-toggle{background:var(--primary);color:#fff !important;border:1px solid var(--primary)}
+.menu-toggle:hover{background:var(--primary-dark);color:#fff !important}
 .page-content{padding:26px 28px;}
 /* Alert */
-.alert{border-radius:10px;font-size:14px;border:none;}
-.alert-success{background:#e3f8ef;color:#065f46;}.alert-danger{background:#fef2f2;color:#7f1d1d;}
+.alert{border-radius:10px;font-size:14px;border:none}
+.alert-success{background:#e3f8ef;color:#065f46}.alert-danger{background:#fef2f2;color:#7f1d1d}
+.toast-notification{position:fixed;top:20px;right:20px;padding:16px 24px;border-radius:12px;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:9999;box-shadow:0 10px 40px rgba(0,0,0,.2);transform:translateX(400px);transition:transform .3s ease}
+.toast-notification.show{transform:translateX(0)}
+.toast-success{background:linear-gradient(135deg,#10b981,#059669)}
+.toast-error{background:linear-gradient(135deg,#ef4444,#dc2626)}
 /* Cards */
 .card{border:1px solid var(--border);border-radius:var(--radius);}
 .card-header{background:#fff;border-bottom:1px solid var(--border);padding:16px 20px;border-radius:var(--radius) var(--radius) 0 0 !important;display:flex;align-items:center;justify-content:space-between;}
@@ -86,7 +94,35 @@
 .is-invalid{border-color:var(--danger)!important;}.invalid-feedback{font-size:12px;}
 /* Sidebar role classes */
 .role-admin .sb-icon{background:#8b5cf6;}.role-dosen .sb-icon{background:#0ea472;}.role-mahasiswa .sb-icon{background:#1a56db;}.role-mitra .sb-icon{background:#f59e0b;}
-@media(max-width:991px){.sidebar{transform:translateX(-100%);}.main-wrap{margin-left:0;}}
+/* Responsive Mobile - Enhanced */
+.menu-toggle{display:none}
+.sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;pointer-events:none;opacity:0;transition:opacity 0.3s;display:none}
+.sidebar-overlay.show{display:block;pointer-events:auto;opacity:1}
+@media(max-width:991px){
+  .menu-toggle{display:flex !important}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;transform:translateX(-100%);transition:transform 0.3s ease;z-index:1001}
+  .sidebar.show{transform:translateX(0)}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:1002;width:100%}
+  .main-wrap{margin-left:0 !important;padding-top:var(--topbar-h)}
+  .page-content{padding:12px !important;padding-top:calc(var(--topbar-h) + 12px) !important}
+  .topbar{padding:0 12px !important}
+  .topbar-title{font-size:15px !important}
+  .stat-card{padding:12px !important}
+  .stat-value{font-size:22px !important}
+  .stat-icon{width:36px;height:36px;font-size:16px}
+  .card-body{padding:12px !important}
+  .table-custom th,.table-custom td{padding:8px 6px;font-size:11px}
+  .btn{padding:6px 12px;font-size:12px}
+  .form-control,.form-select{padding:8px 10px;font-size:13px}
+}
+/* Extra small devices */
+@media(max-width:576px){
+  .stat-value{font-size:20px !important}
+  .stat-label{font-size:11px}
+  .page-content{padding:8px !important;padding-top:calc(var(--topbar-h) + 8px) !important}
+  .card-header{padding:12px !important}
+  .card-body{padding:10px !important}
+}
 </style>
 @stack('styles')
 </head>
@@ -98,8 +134,8 @@
     <div class="sb-brand">
         <div class="sb-icon"><i class="fas fa-graduation-cap"></i></div>
         <div>
-            <div class="sb-name">SIMAGA</div>
-            <div class="sb-sub">Sistem Informasi Magang</div>
+            <div class="sb-name">OMEGA</div>
+            <div class="sb-sub">Otomotisasi Mekanisme Magang</div>
         </div>
     </div>
 
@@ -131,6 +167,9 @@
             <i class="fas fa-file-alt"></i> Pengajuan Magang
             @php $pending = \App\Models\PengajuanMagang::pending()->count(); @endphp
             @if($pending) <span class="nav-badge red">{{ $pending }}</span> @endif
+        </a>
+        <a class="nav-item @activeClass('diskusi*')" href="{{ route('diskusi.index', ['pengajuan' => 1]) }}">
+            <i class="fas fa-comments"></i> Diskusi
         </a>
         <a class="nav-item @activeClass('admin/sertifikat*')" href="{{ route('admin.sertifikat.index') }}">
             <i class="fas fa-certificate"></i> Sertifikat
@@ -286,8 +325,14 @@
 
 {{-- MAIN WRAPPER --}}
 <div class="main-wrap">
+    {{-- Overlay for mobile --}}
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
     {{-- Topbar --}}
     <div class="topbar">
+        <button class="ic-btn menu-toggle me-2" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
         <div>
             <div class="topbar-title">@yield('page-title','Dashboard')</div>
             @hasSection('page-sub')
@@ -348,14 +393,14 @@
 
     {{-- Page Content --}}
     <div class="page-content">
-        {{-- Flash Messages --}}
+        {{-- Flash Messages as Toast --}}
         @if(session('success'))
-            <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+            <div class="toast-notification toast-success" id="toast-success">
                 <i class="fas fa-check-circle"></i> {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+            <div class="toast-notification toast-error" id="toast-error">
                 <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
             </div>
         @endif
@@ -368,14 +413,52 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+// CSRF Token Setup untuk semua AJAX request
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+// Handle 419 Session Expired
+$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+    if (jqXHR.status === 419) {
+        // Session expired - redirect ke login
+        window.location.href = '{{ route("login") }}?expired=1';
+    }
+});
+
+
 $.fn.select2.defaults.set('theme','bootstrap-5');
+
+// Toggle Sidebar for Mobile
+function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('show');
+    document.querySelector('.sidebar-overlay').classList.toggle('show');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 991) {
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.querySelector('.menu-toggle');
+        if (sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+                document.querySelector('.sidebar-overlay').classList.remove('show');
+            }
+        }
+    }
+});
+
 $(document).ready(function(){
     $('.select2').select2();
+    // Show toast notifications
+    const toastSuccess = document.getElementById('toast-success');
+    const toastError = document.getElementById('toast-error');
+    if(toastSuccess){setTimeout(()=>toastSuccess.classList.add('show'),100);setTimeout(()=>{toastSuccess.classList.remove('show');setTimeout(()=>toastSuccess.remove(),300)},4000)}
+    if(toastError){setTimeout(()=>toastError.classList.add('show'),100);setTimeout(()=>{toastError.classList.remove('show');setTimeout(()=>toastError.remove(),300)},5000)}
     // Auto-dismiss alerts
-    setTimeout(()=>document.querySelectorAll('.alert').forEach(a=>{
-        a.style.transition='opacity .5s';a.style.opacity='0';
-        setTimeout(()=>a.remove(),500);
-    }),4000);
+    setTimeout(()=>document.querySelectorAll('.alert').forEach(a=>{a.style.transition='opacity .5s';a.style.opacity='0';setTimeout(()=>a.remove(),500)}),4000)
 });
 </script>
 @stack('scripts')

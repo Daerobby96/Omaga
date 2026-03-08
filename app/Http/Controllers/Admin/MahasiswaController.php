@@ -112,4 +112,14 @@ class MahasiswaController extends Controller
         return redirect()->route('admin.mahasiswa.index')
             ->with('success','Data mahasiswa berhasil dihapus.');
     }
+
+    public function aktivasi(Mahasiswa $mahasiswa)
+    {
+        $isActive = $mahasiswa->user->is_active;
+        $newStatus = !$isActive;
+        $mahasiswa->user->update(['is_active' => $newStatus]);
+        
+        $statusText = $newStatus ? 'aktif' : 'nonaktif';
+        return back()->with('success', "Status akun mahasiswa menjadi $statusText.");
+    }
 }

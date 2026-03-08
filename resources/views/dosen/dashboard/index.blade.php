@@ -78,7 +78,7 @@
                     <div class="av av-sm" style="background:#f59e0b;">{{ $lb->mahasiswa->avatar_initials }}</div>
                     <div style="flex:1;">
                         <div style="font-size:13px;font-weight:600;">{{ $lb->mahasiswa->nama_lengkap }}</div>
-                        <div style="font-size:11px;color:#64748b;">{{ $lb->tanggal->format('d M Y') }} · {{ Str::limit($lb->kegiatan,30) }}</div>
+                        <div style="font-size:11px;color:#64748b;">{{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }} · {{ Str::limit($lb->kegiatan,30) }}</div>
                     </div>
                     <div class="d-flex gap-1">
                         <form action="{{ route('dosen.logbook.setujui',$lb) }}" method="POST">

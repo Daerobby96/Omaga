@@ -64,11 +64,16 @@ h6{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Program Studi</label>
-                        <input type="text" name="program_studi" class="form-control" value="{{ old('program_studi') }}" placeholder="Teknik Informatika" required>
+                        <select name="program_studi" id="program_studi" class="form-select" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                            @foreach($prodi as $p)
+                                <option value="{{ $p->nama_prodi }}" data-fakultas="{{ $p->fakultas }}">{{ $p->nama_prodi }} ({{ $p->jenjang }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Fakultas</label>
-                        <input type="text" name="fakultas" class="form-control" value="{{ old('fakultas') }}" placeholder="Teknik" required>
+                        <input type="text" name="fakultas" id="fakultas" class="form-control" value="{{ old('fakultas') }}" placeholder="Teknik" required>
                     </div>
                 </div>
                 <div class="row">
@@ -127,5 +132,15 @@ h6{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('program_studi').addEventListener('change', function() {
+    var selectedOption = this.options[this.selectedIndex];
+    var fakultas = selectedOption.getAttribute('data-fakultas');
+    if (fakultas) {
+        document.getElementById('fakultas').value = fakultas;
+    }
+});
+</script>
 </body>
 </html>

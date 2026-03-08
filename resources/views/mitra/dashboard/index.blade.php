@@ -5,6 +5,12 @@
 @section('page-sub', $mitra->nama_perusahaan)
 
 @section('content')
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Statistik</h5>
+    <a href="{{ route('mitra.kuota.edit') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fas fa-cog me-1"></i>Atur Kuota
+    </a>
+</div>
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-file-alt"></i></div>
@@ -21,12 +27,20 @@
     <div class="col-6 col-md-3">
         <div class="stat-card" style="border-top:3px solid #8b5cf6;">
             <div class="stat-icon" style="background:#f3f0ff;color:#8b5cf6;"><i class="fas fa-chair"></i></div>
-            <div class="stat-value">{{ $stats['sisa_kuota'] }}</div><div class="stat-label">Sisa Kuota</div></div>
+            <div class="stat-value">{{ $stats['sisa_kuota'] }}</div><div class="stat-label">Sisa Kuota ({{ $stats['kuota_magang'] }})</div></div>
     </div>
 </div>
 
 {{-- Permohonan Menunggu Review --}}
 @php $reviewList = $pengajuan->whereIn('status',['disetujui_koordinator']); @endphp
+
+{{-- Card Stats --}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Statistik</h5>
+    <a href="{{ route('mitra.kuota.edit') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fas fa-cog me-1"></i>Atur Kuota
+    </a>
+</div>
 @if($reviewList->count())
 <div class="card mb-4" style="border:1px solid #fde68a;background:#fffbeb;">
     <div class="card-header" style="background:#fef9c3;border-bottom:1px solid #fde68a;">
@@ -52,12 +66,22 @@
                     <td style="font-size:13px;">{{ $p->bidang_kerja }}</td>
                     <td style="font-size:12px;color:#64748b;">{{ $p->durasi }}</td>
                     <td>
-                        <a href="{{ Storage::url($p->surat_pengantar) }}" target="_blank" class="btn btn-sm btn-outline-secondary" style="font-size:11px;border-radius:7px;">
+                        @if(in_array($p->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan']))
+                        <a href="{{ route('mitra.surat.pengantar.preview', $p) }}" target="_blank" class="btn btn-sm btn-outline-secondary" style="font-size:11px;border-radius:7px;">
                             <i class="fas fa-file-pdf me-1 text-danger"></i>Surat
                         </a>
+                        @else
+                        <span class="text-muted" style="font-size:11px;">-</span>
+                        @endif
                     </td>
                     <td>
                         <div class="d-flex gap-1">
+                            @if(in_array($p->status, ['disetujui_koordinator']))
+                            <a href="{{ route('mitra.mahasiswa.edit-periode', $p) }}" class="btn btn-primary btn-sm" style="font-size:11px;border-radius:7px;padding:4px 10px;">
+                                <i class="fas fa-calendar me-1"></i>Atur Periode
+                            </a>
+                            @endif
+                            @if($p->status === 'disetujui_koordinator')
                             <form action="{{ route('mitra.mahasiswa.terima',$p) }}" method="POST">
                                 @csrf @method('PATCH')
                                 <button class="btn btn-success btn-sm" style="font-size:11px;border-radius:7px;padding:4px 10px;">

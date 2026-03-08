@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\{
     DashboardController as AdminDashboard,
     MahasiswaController, DosenController, MitraController,
     PengajuanController, SertifikatController, LaporanController,
-    ProdiController
+    ProdiController, SuratController
 };
 use App\Http\Controllers\Mahasiswa\{
     DashboardController as MahasiswaDashboard,
@@ -17,6 +17,7 @@ use App\Http\Controllers\Mahasiswa\{
 };
 use App\Http\Controllers\Dosen\{
     DashboardController as DosenDashboard,
+    BimbinganController,
     LogbookController as DosenLogbook,
     PenilaianController as DosenPenilaian
 };
@@ -52,6 +53,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
 
     // Mahasiswa
     Route::resource('mahasiswa', MahasiswaController::class);
+    Route::patch('mahasiswa/{mahasiswa}/aktivasi', [MahasiswaController::class,'aktivasi'])->name('mahasiswa.aktivasi');
 
     // Dosen
     Route::resource('dosen', DosenController::class)->except(['edit','update','destroy']);
@@ -72,6 +74,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::patch('pengajuan/{pengajuan}/tolak',   [PengajuanController::class,'tolak'])->name('pengajuan.tolak');
     Route::patch('pengajuan/{pengajuan}/mulai',   [PengajuanController::class,'mulai'])->name('pengajuan.mulai');
     Route::patch('pengajuan/{pengajuan}/selesai', [PengajuanController::class,'selesai'])->name('pengajuan.selesai');
+    Route::patch('pengajuan/{pengajuan}/nomor-surat', [PengajuanController::class,'updateNomorSurat'])->name('pengajuan.update-nomor-surat');
+
+    // Surat Otomatis
+    Route::get('pengajuan/{pengajuan}/surat-pengantar/preview', [SuratController::class,'previewPengantar'])->name('surat.pengantar.preview');
+    Route::get('pengajuan/{pengajuan}/surat-pengantar', [SuratController::class,'pengantar'])->name('surat.pengantar');
+    Route::get('pengajuan/{pengajuan}/surat-pengajuan/preview', [SuratController::class,'previewPengajuan'])->name('surat.pengajuan.preview');
+    Route::get('pengajuan/{pengajuan}/surat-pengajuan', [SuratController::class,'pengajuan'])->name('surat.pengajuan');
 
     // Sertifikat
     Route::get('sertifikat',                               [SertifikatController::class,'index'])->name('sertifikat.index');
@@ -81,6 +90,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('sertifikat/{sertifikat}/view',             [SertifikatController::class,'view'])->name('sertifikat.view');
     Route::get('sertifikat/{sertifikat}/download',         [SertifikatController::class,'download'])->name('sertifikat.download');
     Route::get('sertifikat/{sertifikat}/download-image',   [SertifikatController::class,'downloadImage'])->name('sertifikat.downloadImage');
+    Route::get('sertifikat/{sertifikat}/edit',              [SertifikatController::class,'edit'])->name('sertifikat.edit');
+    Route::put('sertifikat/{sertifikat}',                   [SertifikatController::class,'update'])->name('sertifikat.update');
 
     // Laporan
     Route::get('laporan',           [LaporanController::class,'index'])->name('laporan.index');
@@ -93,7 +104,7 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth','role:mahasis
 
     // Pengajuan
     Route::resource('pengajuan', MahasiswaPengajuan::class)->only(['index','create','store','show']);
-    Route::get('pengajuan/{pengajuan}/surat', [MahasiswaPengajuan::class,'downloadSurat'])->name('pengajuan.surat');
+    Route::get('pengajuan/{pengajuan}/surat-pengantar', [SuratController::class,'pengantar'])->name('pengajuan.surat');
 
     // Logbook
     Route::resource('logbook', MahasiswaLogbook::class)->only(['index','create','store','show','edit','update']);
@@ -110,8 +121,11 @@ Route::prefix('dosen')->name('dosen.')->middleware(['auth','role:dosen'])->group
     Route::get('/dashboard', [DosenDashboard::class,'index'])->name('dashboard');
 
     // Bimbingan (read only)
-    Route::get('bimbingan',        fn() => view('dosen.bimbingan.index'))->name('bimbingan.index');
-    Route::get('bimbingan/{pengajuan}', fn($p) => view('dosen.bimbingan.show',['pengajuan'=>$p]))->name('bimbingan.show');
+    Route::get('bimbingan', [BimbinganController::class,'index'])->name('bimbingan.index');
+    Route::get('bimbingan/{pengajuan}', [BimbinganController::class,'show'])->name('bimbingan.show');
+
+    // Surat Pengantar (akses oleh dosen pembimbing)
+    Route::get('bimbingan/{pengajuan}/surat-pengantar/preview', [SuratController::class,'previewPengantarDosen'])->name('surat.pengantar.preview');
 
     // Logbook
     Route::get('logbook',                              [DosenLogbook::class,'index'])->name('logbook.index');
@@ -128,16 +142,25 @@ Route::prefix('dosen')->name('dosen.')->middleware(['auth','role:dosen'])->group
 Route::prefix('mitra')->name('mitra.')->middleware(['auth','role:mitra'])->group(function () {
     Route::get('/dashboard', [MitraDashboard::class,'index'])->name('dashboard');
 
+    // Pengaturan Kuota
+    Route::get('kuota/edit', [MitraDashboard::class,'editKuota'])->name('kuota.edit');
+    Route::put('kuota/update', [MitraDashboard::class,'updateKuota'])->name('kuota.update');
+
     // Mahasiswa
     Route::get('mahasiswa',                        [MitraMahasiswa::class,'index'])->name('mahasiswa.index');
     Route::get('mahasiswa/{pengajuan}',            [MitraMahasiswa::class,'show'])->name('mahasiswa.show');
     Route::patch('mahasiswa/{pengajuan}/terima',   [MitraMahasiswa::class,'terima'])->name('mahasiswa.terima');
     Route::patch('mahasiswa/{pengajuan}/tolak',    [MitraMahasiswa::class,'tolak'])->name('mahasiswa.tolak');
+    Route::get('mahasiswa/{pengajuan}/edit-periode', [MitraMahasiswa::class,'editPeriode'])->name('mahasiswa.edit-periode');
+    Route::patch('mahasiswa/{pengajuan}/update-periode', [MitraMahasiswa::class,'updatePeriode'])->name('mahasiswa.update-periode');
 
     // Penilaian
     Route::get('penilaian', [MitraPenilaian::class,'index'])->name('penilaian.index');
     Route::get('penilaian/{pengajuan}/create',  [MitraPenilaian::class,'create'])->name('penilaian.create');
     Route::post('penilaian/{pengajuan}',        [MitraPenilaian::class,'store'])->name('penilaian.store');
+
+    // Surat Pengantar (akses oleh mitra)
+    Route::get('mahasiswa/{pengajuan}/surat-pengantar/preview', [SuratController::class,'previewPengantarMitra'])->name('surat.pengantar.preview');
 });
 
 // ── KETUA PRODI ────────────────────────────────────────────────
@@ -179,4 +202,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('profile', [\App\Http\Controllers\ProfileController::class,'show'])->name('profile.show');
     Route::put('profile', [\App\Http\Controllers\ProfileController::class,'update'])->name('profile.update');
+});
+
+// ── Forum Diskusi ───────────────────────────────────────────
+Route::middleware('auth')->group(function () {
+    Route::get('pengajuan/{pengajuan}/diskusi', [\App\Http\Controllers\DiskusiController::class,'index'])->name('diskusi.index');
+    Route::post('pengajuan/{pengajuan}/diskusi', [\App\Http\Controllers\DiskusiController::class,'store'])->name('diskusi.store');
 });

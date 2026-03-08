@@ -8,9 +8,14 @@
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold">Detail Pengajuan Magang</h5>
-                        <a href="{{ route('mahasiswa.pengajuan.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i>Kembali
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('diskusi.index', $pengajuan) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-comments me-1"></i>Diskusi
+                            </a>
+                            <a href="{{ route('mahasiswa.pengajuan.index') }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Kembali
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -112,11 +117,11 @@
                                             <table class="table table-borderless">
                                                 <tr>
                                                     <td class="text-muted ps-0" style="width:160px">Tanggal Mulai</td>
-                                                    <td>{{ \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->format('d M Y') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-muted ps-0">Tanggal Selesai</td>
-                                                    <td>{{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->format('d M Y') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-muted ps-0">Bidang Kerja</td>
@@ -132,7 +137,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="text-muted ps-0">Tanggal Pengajuan</td>
-                                                    <td>{{ $pengajuan->created_at->format('d M Y') }}</td>
+                                                    <td>{{ $pengajuan->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -142,7 +147,7 @@
                         </div>
 
                         {{-- File Lampiran --}}
-                        @if($pengajuan->surat_pengantar || $pengajuan->proposal)
+                        @if($pengajuan->proposal || $pengajuan->status_koordinator === 'disetujui')
                         <div class="col-12 mb-4">
                             <div class="card border">
                                 <div class="card-header bg-light">
@@ -150,7 +155,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex gap-3">
-                                        @if($pengajuan->surat_pengantar)
+                                        @if($pengajuan->status_koordinator === 'disetujui')
                                             <a href="{{ route('mahasiswa.pengajuan.surat', $pengajuan) }}" class="btn btn-outline-primary">
                                                 <i class="fas fa-file-pdf me-2"></i>Surat Pengantar
                                             </a>

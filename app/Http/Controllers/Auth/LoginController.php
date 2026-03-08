@@ -12,7 +12,8 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        $expired = request()->get('expired', false);
+        return view('auth.login', compact('expired'));
     }
 
     public function login(Request $request)

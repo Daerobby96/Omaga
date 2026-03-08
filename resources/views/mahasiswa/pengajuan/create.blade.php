@@ -76,15 +76,13 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header"><span class="card-header-title"><i class="fas fa-file-upload me-2 text-warning"></i>Upload Dokumen</span></div>
+        <div class="card-header"><span class="card-header-title"><i class="fas fa-file-alt me-2 text-warning"></i>Dokumen</span></div>
         <div class="card-body">
+            <div class="alert alert-info mb-3">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Surat Pengantar</strong> akan dibuat secara otomatis oleh sistem setelah pengajuan disetujui oleh Prodi.
+            </div>
             <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">Surat Pengantar dari Prodi/Fakultas <span class="text-danger">*</span></label>
-                    <input type="file" name="surat_pengantar" class="form-control @error('surat_pengantar') is-invalid @enderror" accept=".pdf">
-                    <div class="form-text">Format PDF, maks. 5MB</div>
-                    @error('surat_pengantar')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
                 <div class="col-md-6">
                     <label class="form-label">Proposal Magang (opsional)</label>
                     <input type="file" name="proposal" class="form-control" accept=".pdf">

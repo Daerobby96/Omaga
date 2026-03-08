@@ -59,16 +59,44 @@
 
     {{-- Dokumen --}}
     <div class="card mb-4">
-        <div class="card-header"><span class="card-header-title">Dokumen Pendukung</span></div>
-        <div class="card-body d-flex gap-3">
-            <a href="{{ Storage::url($pengajuan->surat_pengantar) }}" target="_blank" class="btn btn-outline-primary d-flex align-items-center gap-2" style="border-radius:10px;">
-                <i class="fas fa-file-pdf text-danger"></i> Surat Pengantar
-            </a>
-            @if($pengajuan->proposal)
-            <a href="{{ Storage::url($pengajuan->proposal) }}" target="_blank" class="btn btn-outline-secondary d-flex align-items-center gap-2" style="border-radius:10px;">
-                <i class="fas fa-file-pdf text-danger"></i> Proposal
-            </a>
+        <div class="card-header"><span class="card-header-title">Dokumen & Nomor Surat</span></div>
+        <div class="card-body">
+            {{-- Form Edit Nomor Surat --}}
+            @if(in_array($pengajuan->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan']))
+            <div class="mb-4 p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                <form action="{{ route('admin.pengajuan.update-nomor-surat', $pengajuan) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-2">
+                        <label class="mb-0" style="font-size:13px;font-weight:600;white-space:nowrap;">Nomor Surat:</label>
+                        <input type="text" name="nomor_surat" class="form-control form-control-sm" 
+                               style="max-width:300px;" value="{{ $pengajuan->nomor_surat ?? '' }}" 
+                               placeholder="Contoh: 001/SPM-TRPL/I/2024">
+                        <button type="submit" class="btn btn-sm btn-primary px-3">Simpan</button>
+                    </div>
+                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Kosongkan untuk menghasilkan nomor otomatis</small>
+                </form>
+            </div>
             @endif
+
+            <div class="d-flex flex-wrap gap-2">
+                @if(in_array($pengajuan->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan']))
+                <a href="{{ route('admin.surat.pengantar.preview', $pengajuan) }}" target="_blank" class="btn btn-outline-primary d-inline-flex align-items-center gap-2" style="border-radius:10px;">
+                    <i class="fas fa-file-pdf text-danger"></i> Surat Pengantar
+                </a>
+                <a href="{{ route('admin.surat.pengantar', $pengajuan) }}" class="btn btn-outline-success d-inline-flex align-items-center gap-2" style="border-radius:10px;">
+                    <i class="fas fa-download"></i> Download
+                </a>
+                @else
+                <span class="text-muted" style="font-size:13px;"><i class="fas fa-info-circle me-1"></i>Surat pengantar akan tersedia setelah pengajuan disetujui</span>
+                @endif
+                
+                @if($pengajuan->proposal)
+                <a href="{{ Storage::url($pengajuan->proposal) }}" target="_blank" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" style="border-radius:10px;">
+                    <i class="fas fa-file-pdf text-danger"></i> Proposal
+                </a>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -78,9 +106,9 @@
         <div class="card-header"><span class="card-header-title">Progress Magang</span></div>
         <div class="card-body">
             <div class="d-flex justify-content-between mb-2">
-                <span style="font-size:13px;">{{ $pengajuan->tanggal_mulai->format('d M Y') }}</span>
+                <span style="font-size:13px;">{{ $pengajuan->tanggal_mulai->locale('id')->translatedFormat('d F Y') }}</span>
                 <span style="font-size:13px;font-weight:700;">{{ $pengajuan->progress }}%</span>
-                <span style="font-size:13px;">{{ $pengajuan->tanggal_selesai->format('d M Y') }}</span>
+                <span style="font-size:13px;">{{ $pengajuan->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}</span>
             </div>
             <div class="prog-wrap" style="height:10px;">
                 <div class="prog-fill" style="background:#1a56db;width:{{ $pengajuan->progress }}%;transition:width 1s;"></div>
@@ -136,7 +164,7 @@
                 <div>
                     <div style="font-size:13px;font-weight:{{ $key===$pengajuan->status ? '700' : '500' }};color:{{ $done ? '#0f172a' : '#94a3b8' }}">{{ $label }}</div>
                     @if($key === 'disetujui_koordinator' && $pengajuan->disetujui_koordinator_at)
-                        <div style="font-size:11px;color:#64748b;">{{ $pengajuan->disetujui_koordinator_at->format('d M Y H:i') }}</div>
+                        <div style="font-size:11px;color:#64748b;">{{ $pengajuan->disetujui_koordinator_at->locale('id')->translatedFormat('d F Y H:i') }}</div>
                     @endif
                 </div>
             </div>
@@ -230,6 +258,39 @@
     </div>
     @endif
 
+    {{-- Surat Otomatis --}}
+    @if(in_array($pengajuan->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan', 'selesai']))
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-envelope me-2"></i>Surat Otomatis</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <div class="btn-group w-100">
+                        <a href="{{ route('admin.surat.pengantar.preview', $pengajuan) }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-eye me-2"></i>Preview
+                        </a>
+                        <a href="{{ route('admin.surat.pengantar', $pengajuan) }}" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="btn-group w-100">
+                        <a href="{{ route('admin.surat.pengajuan.preview', $pengajuan) }}" class="btn btn-outline-info" target="_blank">
+                            <i class="fas fa-eye me-2"></i>Preview
+                        </a>
+                        <a href="{{ route('admin.surat.pengajuan', $pengajuan) }}" class="btn btn-info text-white">
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     @if($pengajuan->sertifikat)
     <div class="card mb-3">
         <div class="card-body text-center py-4">
@@ -241,6 +302,17 @@
         </div>
     </div>
     @endif
+
+    {{-- Diskusi --}}
+    <div class="card mb-3">
+        <div class="card-body text-center py-4">
+            <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+            <p style="font-size:13px;color:#64748b;">Forum diskusi untuk pengajuan ini.</p>
+            <a href="{{ route('diskusi.index', $pengajuan) }}" class="btn btn-primary w-100">
+                <i class="fas fa-comments me-2"></i>Buka Diskusi
+            </a>
+        </div>
+    </div>
 
 </div>
 </div>

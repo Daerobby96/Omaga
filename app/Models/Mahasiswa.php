@@ -17,8 +17,12 @@ class Mahasiswa extends Model
         'ipk','status_akademik',
     ];
 
-    public function user()      { return $this->belongsTo(User::class); }
-    public function pengajuan() { return $this->hasMany(PengajuanMagang::class); }
+    public function user()       { return $this->belongsTo(User::class); }
+    public function prodi()       { return $this->belongsTo(Prodi::class, 'program_studi', 'nama_prodi'); }
+    public function pengajuan()   { return $this->hasMany(PengajuanMagang::class); }
+    public function penilaian()    { return $this->hasMany(Penilaian::class); }
+    public function sertifikat()  { return $this->hasMany(Sertifikat::class); }
+    public function logbook()     { return $this->hasMany(Logbook::class); }
 
     public function pengajuanAktif()
     {

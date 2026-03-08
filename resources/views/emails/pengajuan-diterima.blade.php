@@ -28,8 +28,8 @@
             <strong>Kode Pengajuan:</strong> {{ $pengajuan->kode_pengajuan }}<br>
             <strong>Mitra:</strong> {{ $mitra->nama_perusahaan }}<br>
             <strong>Bidang Kerja:</strong> {{ $pengajuan->bidang_kerja }}<br>
-            <strong>Tanggal Mulai:</strong> {{ $pengajuan->tanggal_mulai->format('d F Y') }}<br>
-            <strong>Tanggal Selesai:</strong> {{ $pengajuan->tanggal_selesai->format('d F Y') }}
+            <strong>Tanggal Mulai:</strong> {{ $pengajuan->tanggal_mulai->locale('id')->translatedFormat('d F Y') }}<br>
+            <strong>Tanggal Selesai:</strong> {{ $pengajuan->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}
         </div>
         
         <p>Silakan akses sistem untuk informasi lebih lanjut.</p>

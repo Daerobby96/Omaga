@@ -19,7 +19,6 @@ class StorePengajuanRequest extends FormRequest
             'tanggal_selesai'     => 'required|date|after:tanggal_mulai',
             'bidang_kerja'        => 'required|string|max:200',
             'deskripsi_pekerjaan' => 'nullable|string|max:1000',
-            'surat_pengantar'     => 'required|mimes:pdf|max:5120',
             'proposal'            => 'nullable|mimes:pdf|max:5120',
         ];
     }
@@ -31,8 +30,6 @@ class StorePengajuanRequest extends FormRequest
             'mitra_id.exists'          => 'Perusahaan mitra tidak valid.',
             'tanggal_mulai.after_or_equal' => 'Tanggal mulai minimal hari ini.',
             'tanggal_selesai.after'    => 'Tanggal selesai harus setelah tanggal mulai.',
-            'surat_pengantar.required' => 'Surat pengantar wajib diunggah.',
-            'surat_pengantar.mimes'    => 'Surat pengantar harus berformat PDF.',
         ];
     }
 }

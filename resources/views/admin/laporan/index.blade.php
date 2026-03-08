@@ -4,28 +4,63 @@
 @section('page-title','Laporan & Statistik Magang')
 @section('page-sub','Rekap data program magang')
 
-@section('topbar-actions')
-<form action="{{ route('admin.laporan.index') }}" method="GET" class="d-flex gap-2">
-    <select name="tahun" class="form-select form-select-sm" style="width:auto;">
-        @foreach($tahun_list as $t)
-        <option value="{{ $t }}" @selected($t==$tahun)>{{ $t }}</option>
-        @endforeach
-    </select>
-    <button class="btn btn-primary btn-sm"><i class="fas fa-sync me-1"></i>Tampilkan</button>
-</form>
-<a href="{{ route('admin.laporan.export-pdf') }}?tahun={{ $tahun }}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
-    <i class="fas fa-file-pdf"></i> Export PDF
-</a>
-@endsection
-
 @section('content')
+{{-- Filter Box --}}
+<div class="card mb-4">
+    <div class="card-body p-3">
+        <form action="{{ route('admin.laporan.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 text-muted" style="font-size:12px;">Tahun</label>
+                <select name="tahun" class="form-select form-select-sm" style="width:auto;min-width:100px;">
+                    @foreach($tahun_list as $t)
+                    <option value="{{ $t }}" @selected($t==$tahun)>{{ $t }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 text-muted" style="font-size:12px;">Prodi</label>
+                <select name="prodi" class="form-select form-select-sm" style="width:auto; max-width: 220px;">
+                    <option value="">-- Semua Prodi --</option>
+                    @foreach($prodiList as $p)
+                    <option value="{{ $p->nama_prodi }}" @selected($p->nama_prodi==$prodi)>{{ Str::limit($p->nama_prodi, 30) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 text-muted" style="font-size:12px;">Semester</label>
+                <select name="semester" class="form-select form-select-sm" style="width:auto; max-width: 150px;">
+                    <option value="">-- Semua --</option>
+                    @foreach($semester_list as $s)
+                    <option value="{{ $s }}" @selected($s==$semester)>Semester {{ $s }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="ms-md-auto mt-2 mt-md-0 w-100 w-md-auto d-flex flex-wrap gap-2 justify-content-end">
+                <button class="btn btn-primary btn-sm flex-grow-1 flex-md-grow-0"><i class="fas fa-filter me-1"></i> Terapkan Filter</button>
+                <a href="{{ route('admin.laporan.export-pdf') }}?tahun={{ $tahun }}&prodi={{ urlencode($prodi) }}&semester={{ $semester }}" class="btn btn-outline-danger btn-sm flex-grow-1 flex-md-grow-0 text-nowrap" style="border-radius:6px;">
+                    <i class="fas fa-file-pdf me-1"></i> Export PDF
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- Stats --}}
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="stat-card blue">
             <div class="stat-icon blue"><i class="fas fa-file-alt"></i></div>
             <div class="stat-value">{{ $data['total_pengajuan'] }}</div>
-            <div class="stat-label">Total Pengajuan {{ $tahun }}</div>
+            <div class="stat-label">
+                Total Pengajuan {{ $tahun }}
+                @if($prodi || $semester)<br>
+                <small class="text-muted">
+                    @if($prodi && $semester){{ $prodi }} - Semester {{ $semester }}
+                    @elseif($prodi){{ $prodi }}
+                    @elseif($semester)Semester {{ $semester }}@endif
+                </small>
+                @endif
+            </div>
         </div>
     </div>
     <div class="col-md-4">
@@ -48,7 +83,13 @@
     {{-- Grafik per Bulan --}}
     <div class="col-xl-8">
         <div class="card">
-            <div class="card-header"><span class="card-header-title">Pengajuan per Bulan — {{ $tahun }}</span></div>
+            <div class="card-header"><span class="card-header-title">Pengajuan per Bulan — {{ $tahun }}
+                @if($prodi || $semester)<small class="text-muted ms-1">(
+                    @if($prodi && $semester){{ $prodi }} - Semester {{ $semester }}
+                    @elseif($prodi){{ $prodi }}
+                    @elseif($semester)Semester {{ $semester }}@endif
+                )</small>@endif
+            </span></div>
             <div class="card-body"><canvas id="bulanChart" height="120"></canvas></div>
         </div>
     </div>
@@ -76,7 +117,13 @@
     {{-- Per Prodi --}}
     <div class="col-xl-6">
         <div class="card">
-            <div class="card-header"><span class="card-header-title">Mahasiswa per Program Studi</span></div>
+            <div class="card-header"><span class="card-header-title">Mahasiswa per Program Studi
+                @if($prodi || $semester)<small class="text-muted ms-1">(
+                    @if($prodi && $semester){{ $prodi }} - Semester {{ $semester }}
+                    @elseif($prodi){{ $prodi }}
+                    @elseif($semester)Semester {{ $semester }}@endif
+                )</small>@endif
+            </span></div>
             <div class="card-body"><canvas id="prodiChart" height="200"></canvas></div>
         </div>
     </div>
@@ -84,7 +131,13 @@
     {{-- Tabel Rekapitulasi --}}
     <div class="col-xl-6">
         <div class="card">
-            <div class="card-header"><span class="card-header-title">Rekap Bulanan {{ $tahun }}</span></div>
+            <div class="card-header"><span class="card-header-title">Rekap Bulanan {{ $tahun }}
+                @if($prodi || $semester)<small class="text-muted ms-1">(
+                    @if($prodi && $semester){{ $prodi }} - Semester {{ $semester }}
+                    @elseif($prodi){{ $prodi }}
+                    @elseif($semester)Semester {{ $semester }}@endif
+                )</small>@endif
+            </span></div>
             <div class="table-responsive">
                 <table class="table-custom">
                     <thead><tr><th>Bulan</th><th>Pengajuan</th></tr></thead>

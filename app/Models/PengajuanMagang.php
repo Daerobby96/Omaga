@@ -16,7 +16,7 @@ class PengajuanMagang extends Model
     protected $fillable = [
         'kode_pengajuan','mahasiswa_id','mitra_id','dosen_id',
         'tanggal_mulai','tanggal_selesai','bidang_kerja','deskripsi_pekerjaan',
-        'surat_pengantar','proposal','status',
+        'surat_pengantar','proposal','nomor_surat','status',
         'catatan_koordinator','catatan_mitra',
         'disetujui_koordinator_at','diterima_mitra_at','disetujui_oleh',
     ];

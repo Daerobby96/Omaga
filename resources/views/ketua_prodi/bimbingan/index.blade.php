@@ -34,10 +34,10 @@
                         </td>
                         <td>{{ $p->mitra->nama_perusahaan ?? '-' }}</td>
                         <td>
-                            {{ $p->tanggal_mulai ? \Carbon\Carbon::parse($p->tanggal_mulai)->format('d M Y') : '-' }}
+                            {{ $p->tanggal_mulai ? \Carbon\Carbon::parse($p->tanggal_mulai)->locale('id')->translatedFormat('d F Y') : '-' }}
                             @if($p->tanggal_selesai)
                                 <span class="text-muted">-</span>
-                                {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($p->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
                             @endif
                         </td>
                         <td>

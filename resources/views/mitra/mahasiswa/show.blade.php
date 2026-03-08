@@ -4,6 +4,12 @@
 @section('page-title','Detail Mahasiswa Magang')
 @section('page-sub', $pengajuan->mahasiswa->nama_lengkap)
 
+@section('topbar-actions')
+<a href="{{ route('diskusi.index', $pengajuan) }}" class="btn btn-primary btn-sm">
+    <i class="fas fa-comments me-1"></i>Diskusi
+</a>
+@endsection
+
 @section('content')
 <div class="row g-4">
 <div class="col-xl-8">
@@ -39,6 +45,11 @@
                     <div>
                         <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Periode</div>
                         <div style="font-size:14px;font-weight:600;">{{ $pengajuan->durasi }}</div>
+                        @if($pengajuan->status === 'disetujui_koordinator')
+                        <a href="{{ route('mitra.mahasiswa.edit-periode', $pengajuan) }}" class="btn btn-sm btn-outline-primary mt-2">
+                            <i class="fas fa-edit me-1"></i>Ubah Periode
+                        </a>
+                        @endif
                     </div>
                 </div>
                 @if($pengajuan->status === 'berjalan')
@@ -95,6 +106,21 @@
     </div>
     @endif
 
+    {{-- Surat Pengantar --}}
+    @if(in_array($pengajuan->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan']))
+    <div class="card mb-4">
+        <div class="card-header">
+            <span class="card-header-title"><i class="fas fa-envelope me-2"></i>Surat Pengantar Magang</span>
+        </div>
+        <div class="card-body">
+            <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Surat pengantar resmi dari universitas untuk mahasiswa magang di perusahaan Anda.</p>
+            <a href="{{ route('mitra.surat.pengantar.preview', $pengajuan) }}" target="_blank" class="btn btn-sm" style="background:#0ea472;color:#fff;">
+                <i class="fas fa-file-pdf me-1"></i>Lihat Surat Pengantar
+            </a>
+        </div>
+    </div>
+    @endif
+
     {{-- Logbook --}}
     <div class="card">
         <div class="card-header">
@@ -107,7 +133,7 @@
                 <tbody>
                     @foreach($pengajuan->logbook->sortByDesc('tanggal') as $lb)
                     <tr>
-                        <td style="font-size:12px;font-family:'DM Mono',mono;color:#64748b;">{{ $lb->tanggal->format('d M Y') }}</td>
+                        <td style="font-size:12px;font-family:'DM Mono',mono;color:#64748b;">{{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }}</td>
                         <td style="font-size:12px;color:#0ea472;font-weight:600;">{{ substr($lb->jam_masuk,0,5) }}</td>
                         <td style="font-size:12px;color:#ef4444;font-weight:600;">{{ substr($lb->jam_keluar,0,5) }}</td>
                         <td>

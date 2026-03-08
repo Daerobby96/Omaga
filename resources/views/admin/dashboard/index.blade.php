@@ -93,7 +93,7 @@
                                 <div style="font-size:11px;color:#64748b;">{{ $p->bidang_kerja }}</div>
                             </td>
                             <td style="font-size:12px;font-family:'DM Mono',mono;color:#64748b;">
-                                {{ $p->created_at->format('d M Y') }}
+                                {{ $p->created_at->locale('id')->translatedFormat('d F Y') }}
                             </td>
                             <td>
                                 <span class="bdg {{ $p->status_badge['class'] }}">

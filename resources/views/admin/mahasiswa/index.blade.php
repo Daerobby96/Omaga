@@ -66,7 +66,8 @@
                     <th>Program Studi</th>
                     <th>Angkatan</th>
                     <th>IPK</th>
-                    <th>Status</th>
+                    <th>Status Akademik</th>
+                    <th>Status Akun</th>
                     <th>Status Magang</th>
                     <th>Aksi</th>
                 </tr>
@@ -93,6 +94,13 @@
                     </td>
                     <td><span class="bdg {{ $m->status_badge['class'] }}">{{ $m->status_badge['label'] }}</span></td>
                     <td>
+                        @if($m->user->is_active)
+                            <span class="bdg bg-success-subtle text-success"><i class="fas fa-check-circle"></i> Aktif</span>
+                        @else
+                            <span class="bdg bg-danger-subtle text-danger"><i class="fas fa-times-circle"></i> Nonaktif</span>
+                        @endif
+                    </td>
+                    <td>
                         @php $aktif = $m->pengajuanAktif; @endphp
                         @if($aktif)
                             <span class="bdg bg-success-subtle text-success"><i class="fas fa-circle" style="font-size:8px;"></i> Sedang Magang</span>
@@ -102,8 +110,13 @@
                     </td>
                     <td>
                         <div class="d-flex gap-1">
+                            <form action="{{ route('admin.mahasiswa.aktivasi', $m) }}" method="POST">
+                                @csrf @method('PATCH')
+                                <button type="submit" class="btn btn-sm {{ $m->user->is_active ? 'btn-outline-warning' : 'btn-outline-success' }}" style="font-size:11px;border-radius:7px;padding:4px 9px;" title="{{ $m->user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} akun">
+                                    <i class="fas fa-{{ $m->user->is_active ? 'ban' : 'check' }}"></i>
+                                </button>
+                            </form>
                             <a href="{{ route('admin.mahasiswa.show',$m) }}" class="btn btn-sm btn-outline-primary" style="font-size:11px;border-radius:7px;padding:4px 10px;">Detail</a>
-                            <a href="{{ route('admin.mahasiswa.edit',$m) }}" class="btn btn-sm btn-outline-secondary" style="font-size:11px;border-radius:7px;padding:4px 10px;">Edit</a>
                             <form action="{{ route('admin.mahasiswa.destroy',$m) }}" method="POST" onsubmit="return confirm('Hapus mahasiswa ini?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger" style="font-size:11px;border-radius:7px;padding:4px 10px;">Hapus</button>
@@ -112,7 +125,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="text-center py-5 text-muted">
+                <tr><td colspan="9" class="text-center py-5 text-muted">
                     <i class="fas fa-user-graduate fa-2x mb-2 d-block opacity-25"></i>
                     Belum ada mahasiswa terdaftar
                 </td></tr>

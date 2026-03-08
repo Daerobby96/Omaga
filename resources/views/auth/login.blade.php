@@ -42,6 +42,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;min-height:10
             @if(session('success'))
                 <div class="alert alert-success mb-3"><i class="fas fa-check-circle me-2"></i>{{ session('success') }}</div>
             @endif
+            @if(isset($expired) && $expired)
+                <div class="alert alert-warning mb-3"><i class="fas fa-clock me-2"></i>Sesi Anda telah habis. Silakan login kembali.</div>
+            @endif
             @if($errors->any())
                 <div class="alert alert-danger mb-3"><i class="fas fa-exclamation-circle me-2"></i>{{ $errors->first() }}</div>
             @endif

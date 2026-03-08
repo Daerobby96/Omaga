@@ -48,7 +48,7 @@ $pengajuan = \App\Models\PengajuanMagang::with(['mahasiswa','mitra','dosen','log
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-muted" style="font-size:11px;">PERIODE</label>
-                        <div style="font-weight:600;">{{ $pengajuan->tanggal_mulai->format('d M Y') }} - {{ $pengajuan->tanggal_selesai->format('d M Y') }}</div>
+                        <div style="font-weight:600;">{{ $pengajuan->tanggal_mulai->locale('id')->translatedFormat('d F Y') }} - {{ $pengajuan->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-muted" style="font-size:11px;">STATUS</label>
@@ -61,10 +61,10 @@ $pengajuan = \App\Models\PengajuanMagang::with(['mahasiswa','mitra','dosen','log
                             <span style="font-weight:600;">{{ $pengajuan->progress }}%</span>
                         </div>
                     </div>
-                    @if($pengajuan->surat_pengantar)
+                    @if(in_array($pengajuan->status, ['disetujui_koordinator', 'diterima_mitra', 'berjalan']))
                     <div class="col-12">
                         <label class="form-label text-muted" style="font-size:11px;">SURAT PENGANTAR</label>
-                        <a href="{{ asset('storage/'.$pengajuan->surat_pengantar) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Lihat Surat</a>
+                        <a href="{{ route('dosen.surat.pengantar.preview', $pengajuan) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Lihat Surat</a>
                     </div>
                     @endif
                 </div>
@@ -81,7 +81,7 @@ $pengajuan = \App\Models\PengajuanMagang::with(['mahasiswa','mitra','dosen','log
                     <tbody>
                         @forelse($pengajuan->logbook as $log)
                         <tr>
-                            <td style="font-size:12px;">{{ $log->tanggal->format('d M') }}</td>
+                            <td style="font-size:12px;">{{ $log->tanggal->locale('id')->translatedFormat('d F') }}</td>
                             <td style="font-size:12px;">{{ Str::limit($log->keterangan,50) }}</td>
                             <td><span class="bdg bdg-sm {{ $log->status === 'disetujui' ? 'bg-success-subtle text-success' : ($log->status === 'revisi' ? 'bg-warning-subtle text-warning' : 'bg-secondary-subtle text-secondary') }}">{{ ucfirst($log->status) }}</span></td>
                         </tr>
@@ -107,7 +107,7 @@ $pengajuan = \App\Models\PengajuanMagang::with(['mahasiswa','mitra','dosen','log
                     </div>
                     <div class="col-md-4">
                         <label class="form-label text-muted" style="font-size:11px;">TANGGAL PENILAIAN</label>
-                        <div style="font-size:14px;">{{ $pengajuan->penilaian->created_at->format('d M Y') }}</div>
+                        <div style="font-size:14px;">{{ $pengajuan->penilaian->created_at->locale('id')->translatedFormat('d F Y') }}</div>
                     </div>
                 </div>
             </div>
@@ -115,6 +115,7 @@ $pengajuan = \App\Models\PengajuanMagang::with(['mahasiswa','mitra','dosen','log
         @endif
         <div class="d-flex gap-2">
             <a href="{{ route('dosen.bimbingan.index') }}" class="btn px-4" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:8px;font-weight:500;">Kembali</a>
+            <a href="{{ route('diskusi.index', $pengajuan) }}" class="btn px-4" style="background:#f1f5f9;color:#1a56db;border:1px solid #1a56db;border-radius:8px;font-weight:500;"><i class="fas fa-comments me-2"></i>Diskusi</a>
             @if($pengajuan->status === 'berjalan')
             <a href="{{ route('dosen.penilaian.create',$pengajuan) }}" class="btn btn-primary px-4"><i class="fas fa-star me-2"></i>Beri Nilai</a>
             @endif

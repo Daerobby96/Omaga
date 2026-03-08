@@ -117,11 +117,16 @@ class SertifikatController extends Controller
         return back()->with('success', 'Pengaturan sertifikat berhasil diperbarui.');
     }
 
-    public function generate(PengajuanMagang $pengajuan)
+    public function generate(Request $request, PengajuanMagang $pengajuan)
     {
         abort_unless($pengajuan->status === 'selesai', 403, 'Magang belum selesai.');
         abort_unless($pengajuan->penilaian?->lulus, 403, 'Mahasiswa belum lulus penilaian.');
 
+        // Validate certificate number
+        $request->validate([
+            'nomor_sertifikat' => 'required|string|max:255|unique:sertifikat,nomor_sertifikat',
+        ]);
+        
         // Reload to get latest data
         $pengajuan->refresh();
         
@@ -130,22 +135,21 @@ class SertifikatController extends Controller
             ['pengajuan_id' => $pengajuan->id],
             [
                 'mahasiswa_id'    => $pengajuan->mahasiswa_id,
+                'nomor_sertifikat'=> $request->nomor_sertifikat,
                 'diterbitkan_at'  => now(),
                 'diterbitkan_oleh'=> auth()->id(),
             ]
         );
 
-        // If already has file, skip generation
-        if ($sertifikat->file_sertifikat && Storage::disk('public')->exists($sertifikat->file_sertifikat)) {
-            return back()->with('info', "Sertifikat {$sertifikat->nomor_sertifikat} sudah ada.");
+        // If certificate exists, update the number
+        if ($sertifikat->wasRecentlyCreated === false) {
+            $sertifikat->nomor_sertifikat = $request->nomor_sertifikat;
+            $sertifikat->save();
         }
 
-        // Ensure we have nomor_sertifikat
-        if (empty($sertifikat->nomor_sertifikat)) {
-            $sertifikat->nomor_sertifikat = 'SERT/'.date('Y').'/'.str_pad(
-                (Sertifikat::whereYear('created_at',date('Y'))->count()+1), 4,'0',STR_PAD_LEFT
-            );
-            $sertifikat->save();
+        // If already has file, regenerate it
+        if ($sertifikat->file_sertifikat && Storage::disk('public')->exists($sertifikat->file_sertifikat)) {
+            Storage::disk('public')->delete($sertifikat->file_sertifikat);
         }
 
         // Generate PDF with settings
@@ -163,9 +167,7 @@ class SertifikatController extends Controller
         ];
         
         $pdf = Pdf::setPaper('a4','landscape')
-                    ->setOption('isRemoteEnabled', true)
-                    ->setOption('isPhpEnabled', true)
-                    ->setOption('defaultFont', 'DejaVu Sans')
+                    ->setOption('defaultFont', 'Georgia')
                     ->loadView('admin.sertifikat.template', compact('sertifikat', 'pengajuan', 'settings'));
         $path = "sertifikat/{$sertifikat->nomor_sertifikat}.pdf";
         Storage::disk('public')->put($path, $pdf->output());
@@ -212,9 +214,7 @@ class SertifikatController extends Controller
         
         // Generate PDF
         $pdf = Pdf::setPaper('a4','landscape')
-                    ->setOption('isRemoteEnabled', true)
-                    ->setOption('isPhpEnabled', true)
-                    ->setOption('defaultFont', 'DejaVu Sans')
+                    ->setOption('defaultFont', 'Georgia')
                     ->loadView('admin.sertifikat.template', compact('sertifikat', 'pengajuan', 'settings'));
         
         // Try to output as PNG
@@ -248,5 +248,39 @@ class SertifikatController extends Controller
         ];
         
         return view('admin.sertifikat.template', compact('sertifikat', 'pengajuan', 'settings'));
+    }
+
+    public function edit(Sertifikat $sertifikat)
+    {
+        return view('admin.sertifikat.edit', compact('sertifikat'));
+    }
+
+    public function update(Request $request, Sertifikat $sertifikat)
+    {
+        $request->validate([
+            'nomor_sertifikat' => 'required|string|max:255|unique:sertifikat,nomor_sertifikat,' . $sertifikat->id,
+        ]);
+
+        $oldNomor = $sertifikat->nomor_sertifikat;
+        $newNomor = $request->nomor_sertifikat;
+
+        // Update nomor sertifikat
+        $sertifikat->nomor_sertifikat = $newNomor;
+        $sertifikat->save();
+
+        // Rename file if exists
+        if ($sertifikat->file_sertifikat) {
+            $oldPath = $sertifikat->file_sertifikat;
+            $ext = pathinfo($oldPath, PATHINFO_EXTENSION);
+            $newPath = "sertifikat/{$newNomor}.{$ext}";
+            
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->move($oldPath, $newPath);
+                $sertifikat->file_sertifikat = $newPath;
+                $sertifikat->save();
+            }
+        }
+
+        return redirect()->route('admin.sertifikat.index')->with('success', "Nomor sertifikat berhasil diubah dari {$oldNomor} menjadi {$newNomor}");
     }
 }

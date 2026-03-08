@@ -88,5 +88,40 @@ class MahasiswaController extends Controller
 
         return back()->with('success','Mahasiswa telah ditolak.');
     }
+
+    /** Mitra mengatur periode magang */
+    public function editPeriode(PengajuanMagang $pengajuan)
+    {
+        abort_unless($pengajuan->mitra_id === auth()->user()->mitra->id, 403);
+        abort_unless($pengajuan->status === 'disetujui_koordinator', 403);
+        
+        return view('mitra.mahasiswa.edit-periode', compact('pengajuan'));
+    }
+
+    /** Mitra update periode magang */
+    public function updatePeriode(Request $request, PengajuanMagang $pengajuan)
+    {
+        abort_unless($pengajuan->mitra_id === auth()->user()->mitra->id, 403);
+        abort_unless($pengajuan->status === 'disetujui_koordinator', 403);
+
+        $request->validate([
+            'tanggal_mulai'    => 'required|date|after_or_equal:today',
+            'tanggal_selesai'  => 'required|date|after:tanggal_mulai',
+        ]);
+
+        $pengajuan->update([
+            'tanggal_mulai'   => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+        ]);
+
+        Notifikasi::create([
+            'user_id' => $pengajuan->mahasiswa->user_id,
+            'judul'   => 'Periode Magang Diperbarui',
+            'pesan'   => "Periode magang Anda di {$pengajuan->mitra->nama_perusahaan} telah diperbarui.",
+            'tipe'    => 'info',
+        ]);
+
+        return redirect()->route('mitra.dashboard')->with('success', 'Periode magang berhasil diperbarui.');
+    }
 }
 

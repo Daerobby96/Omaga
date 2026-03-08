@@ -50,7 +50,7 @@ $revisi  = $logbook->getCollection()->where('status','revisi')->count();
                 @forelse($logbook as $lb)
                 <tr>
                     <td style="font-size:12px;font-family:'DM Mono',mono;color:#64748b;white-space:nowrap;">
-                        {{ $lb->tanggal->format('d M Y') }}
+                        {{ $lb->tanggal->locale('id')->translatedFormat('d F Y') }}
                     </td>
                     <td style="font-size:12px;color:#64748b;white-space:nowrap;">
                         {{ substr($lb->jam_masuk,0,5) }} – {{ substr($lb->jam_keluar,0,5) }}

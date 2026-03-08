@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Mahasiswa;
+use App\Models\Prodi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,7 +18,8 @@ class RegisterMahasiswaController extends Controller
 {
     public function showForm()
     {
-        return view('auth.register-mahasiswa');
+        $prodi = Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
+        return view('auth.register-mahasiswa', compact('prodi'));
     }
 
     public function register(Request $request)
